@@ -17,7 +17,9 @@ const serverURL = 'http://localhost:3000/api/v1'
 // }
 
 export function getDepartment() {
-  return request.get('https://collectionapi.metmuseum.org/public/collection/v1/departments')
+  return request
+    .get('https://collectionapi.metmuseum.org/public/collection/v1/departments')
     .then(res => res.body)
     .catch(e => console.log(e))
 }
+
