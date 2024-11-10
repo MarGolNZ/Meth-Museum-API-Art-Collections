@@ -26,21 +26,33 @@ const objectsRouter = express.Router()
 
 // Fetch objects by department ID
 objectsRouter.get('/', async (req, res) => {
-  const { departmentIds = 1 } = req.query
+  const { departmentIds = 1, page = 1, pageSize = 10 } = req.query
   const cacheKey = `objects-${departmentIds}`
-  const cachedData = cache.get(cacheKey)
 
-  if (cachedData) {
-    return res.json(cachedData)
-  }
+  let cachedData = cache.get(cacheKey)
 
-  try {
-    const response = await request.get(`https://collectionapi.metmuseum.org/public/collection/v1/objects?departmentIds=${departmentIds}`)
-    cache.set(cacheKey, response.body)
-    res.json(response.body)
-  } catch (err) {
-    res.status(500).json({ error: err.message })
+  // Fetch objects if not cached
+  if (!cachedData) {
+    try {
+      const response = await request.get(`https://collectionapi.metmuseum.org/public/collection/v1/objects?departmentIds=${departmentIds}`)
+      cachedData = response.body.objectIDs || []
+      cache.set(cacheKey, cachedData)
+    } catch (err) {
+      return res.status(500).json({ error: err.message })
+    }
   }
+  const totalItems = cachedData.length
+  const startIndex = (page - 1) * pageSize
+  const endIndex = Math.min(startIndex + parseInt(pageSize), totalItems)
+  const paginatedItems = cachedData.slice(startIndex, endIndex)
+
+  res.json({
+    totalItems,
+    page: parseInt(page),
+    pageSize: parseInt(pageSize),
+    totalPages: Math.ceil(totalItems / pageSize),
+    items: paginatedItems,
+  })
 })
 
 // Search objects by department and query

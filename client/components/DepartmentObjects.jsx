@@ -1,28 +1,41 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
-import { getObjectsByDepartment, getObjectDetails } from '../api'
+import { getObjects, getObjectDetails } from '../api'
 
 function DepartmentObjects () {
   const { departmentId } = useParams()
   const location = useLocation()
   const departmentName = location.state?.departmentName || 'Department'
+  const [page, setPage] = useState(1)
+  const [pageSize] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
   const [objectIds, setObjectIds] = useState([])
   const [objects, setObjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    getObjectsByDepartment(departmentId)
-      .then((data) => {
-        setObjectIds(data.objectIDs)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setError('Failed to load objects')
-        setLoading(false)
-        console.error('Error fetching objects:', err)
-      })
+    setPage(1)
   }, [departmentId])
+
+  useEffect(() => {
+    setLoading(true)
+    getObjects(departmentId, page, pageSize)
+      .then(data => {
+        setObjectIds(data.items)
+        setTotalPages(data.totalPages)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [departmentId, page, pageSize])
+
+  const handleNextPage = () => {
+    if (page < totalPages) setPage(prevPage => prevPage + 1)
+  }
+
+  const handlePrevPage = () => {
+    if (page > 1) setPage(prevPage => prevPage - 1)
+  }
 
   useEffect(() => {
     if (!objectIds || objectIds.length === 0) {
@@ -61,12 +74,17 @@ function DepartmentObjects () {
             <h3>{object.title}</h3>
             <p>Artist: {object.artistDisplayName || 'Unknown'}</p>
             <p>Date: {object.objectDate || 'Unknown'}</p>
-            {object.primaryImage && (
-              <img src={object.primaryImage} alt={object.title} width="200" />
+            {object.primaryImageSmall && (
+              <img src={object.primaryImageSmall} alt={object.title} width="200" />
             )}
           </li>
         ))}
       </ul>
+      <button onClick={handlePrevPage} disabled={page === 1}>Previous</button>
+      <button onClick={handleNextPage} disabled={page === totalPages}>Next</button>
+      <p>
+            Page {page} of {totalPages}
+      </p>
     </div>
   )
 }
