@@ -3,7 +3,7 @@ import { Link, Route, Switch, useRouteMatch } from 'react-router-dom'
 import DepartmentData from './DepartmentData'
 
 function Home() {
-  const { path, url } = useRouteMatch() // Use for relative routing
+  const { path, url } = useRouteMatch()
 
   return (
     <div>
@@ -17,7 +17,7 @@ function Home() {
       <div className="content">
         <Switch>
           <Route exact path={path} render={() => <p>Select an option above to view data.</p>} />
-          <Route path={`${path}departments`} exact component={DepartmentData} />
+          <Route path={`${path}departments`} component={DepartmentData} />
         </Switch>
       </div>
     </div>

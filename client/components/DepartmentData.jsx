@@ -1,32 +1,43 @@
-import React, { useState, useEffect } from 'react'
-import { getDepartment } from '../api'
-import { Route, Link } from "react-router-dom";
-import DisplayArtPerDepartment from "./DisplayArtPerDepartment"
+import React, { useEffect, useState } from 'react'
+import { Link, Route, useRouteMatch } from 'react-router-dom'
+import DepartmentObjects from './DepartmentObjects'
+import { getDepartments } from '../api'
 
-export default function DepartmentData() {
-    const [departmentList, setDepartmentList] = useState([])
+function DepartmentData() {
+  const [departments, setDepartments] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const { path, url } = useRouteMatch()
 
-    useEffect(() => {
-        getDepartment()
-            .then(result => {
-                setDepartmentList(result.departments)
-                return null
-            })
-            .catch((err) => {
-                console.error(err.message)
-            })
-    }, [])
+  useEffect(() => {
+    getDepartments()
+      .then(data => {
+        setDepartments(data.departments)
+        setLoading(false)
+      })
+      .catch(err => {
+        setError('Failed to load departments')
+        setLoading(false)
+      })
+  }, [])
 
-    return (
-        <>
-            <h1>The Metropolitan Museum of Art Collection API</h1>
-            <ul>
-                {departmentList.map(department => <li key={department.departmentId}><Link to={`/department/${department.departmentId}`} replace >{department.displayName}</Link></li>)}
-            </ul>
-            <div>
-                <Route path='/' component={DisplayArtPerDepartment} />
-            </div>
-        </>
-    )
+  if (loading) return <p>Loading departments...</p>
+  if (error) return <p>{error}</p>
+
+  return (
+    <div>
+      <h2>Departments</h2>
+      <ul>
+        {departments.map(dept => (
+          <button key={dept.departmentId}>
+            <Link to={`${url}/${dept.departmentId}`}>{dept.displayName}</Link>
+          </button>
+        ))}
+      </ul>
+
+      <Route path={`${path}/:departmentId`} component={DepartmentObjects} />
+    </div>
+  )
 }
 
+export default DepartmentData
