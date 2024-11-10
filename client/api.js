@@ -35,3 +35,10 @@ export function getObjectsByDepartment(depId, query = 'painting') {
     .then(response => response.body)
     .catch(error => console.error('Error fetching objects by department:', error))
 }
+
+// Fetch details of a specific object by its ID
+export function getObjectDetails(objectId) {
+  return request
+    .get(`${serverURL}/objects/${objectId}`)
+    .then((res) => res.body)
+}

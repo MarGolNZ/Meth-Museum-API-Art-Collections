@@ -3,7 +3,7 @@ import { Link, Route, useRouteMatch } from 'react-router-dom'
 import DepartmentObjects from './DepartmentObjects'
 import { getDepartments } from '../api'
 
-function DepartmentData() {
+function DepartmentData () {
   const [departments, setDepartments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -30,7 +30,14 @@ function DepartmentData() {
       <ul>
         {departments.map(dept => (
           <button key={dept.departmentId}>
-            <Link to={`${url}/${dept.departmentId}`}>{dept.displayName}</Link>
+            <Link
+              to={{
+                pathname: `${url}/${dept.departmentId}`,
+                state: { departmentName: dept.displayName }
+              }}
+            >
+              {dept.displayName}
+            </Link>
           </button>
         ))}
       </ul>
