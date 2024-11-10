@@ -1,32 +1,37 @@
 import request from 'superagent'
+
 const serverURL = 'http://localhost:3000/api/v1'
 
-// *** EXAMPLE ***
-// export function getWelcome() {
-//   return request
-//     .get(`${serverURL}/welcome`)
-//     .then(response => response.body)
-// }
-// ***   ***   ***
-
-export function getDepartment() {
+// Fetch the welcome message from the server
+export function getWelcome() {
   return request
-    .get('https://collectionapi.metmuseum.org/public/collection/v1/departments')
-    .then(res => res.body)
-    .catch(e => console.log(e))
+    .get(`${serverURL}/welcome`)
+    .then(response => response.body)
+    .catch(error => console.error('Error fetching welcome:', error))
 }
 
-export function getObjects() { // 'departmentIds' as a parameter??
+// Fetch department data from the server
+export function getDepartments() {
   return request
-    .get(`https://collectionapi.metmuseum.org/public/collection/v1/objects?departmentIds=1`)
-    .then(res => res.body)
-    .catch(e => console.log(e))
+    .get(`${serverURL}/departments`)
+    .then(response => response.body)
+    .catch(error => console.error('Error fetching departments:', error))
 }
 
-export function getObjectsbyDepartment(depId) {
-
+// Fetch objects by department ID
+export function getObjects(departmentIds = 1) {
   return request
-    .get(`https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=painting&departmentId=${depId}`)
-    .then(res => res.body)
-    .catch(e => console.log(e))
+    .get(`${serverURL}/objects`)
+    .query({ departmentIds }) // Pass departmentIds as a query parameter
+    .then(response => response.body)
+    .catch(error => console.error('Error fetching objects:', error))
+}
+
+// Fetch objects by department ID with specific search criteria
+export function getObjectsByDepartment(depId, query = 'painting') {
+  return request
+    .get(`${serverURL}/objects/search`)
+    .query({ depId, q: query }) // Pass depId and search query as query parameters
+    .then(response => response.body)
+    .catch(error => console.error('Error fetching objects by department:', error))
 }
