@@ -6,7 +6,7 @@ function Home() {
   const { path, url } = useRouteMatch()
 
   return (
-    <div>
+    <div className="main-content">
       <h1>Welcome to the Met Museum Explorer</h1>
       <nav>
         <button>

@@ -67,19 +67,32 @@ function DepartmentObjects () {
         ? <p>No objects found for department {departmentName}</p>
         : <h2>Objects in {departmentName}</h2>
       }
-
-      <ul>
-        {objects.map((object, idx) => (
-          <li key={object.objectID}>
-            <h3>{object.title}</h3>
-            <p>Artist: {object.artistDisplayName || 'Unknown'}</p>
-            <p>Date: {object.objectDate || 'Unknown'}</p>
-            {object.primaryImageSmall && (
-              <img src={object.primaryImageSmall} alt={object.title} width="200" />
-            )}
-          </li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {objects.map(object => (
+            <tr key={object.objectID}>
+              <td>
+                {object.primaryImageSmall ? (
+                  <img src={object.primaryImageSmall} alt={object.title} width="100" />
+                ) : (
+                  'No Image'
+                )}
+              </td>
+              <td>{object.title}</td>
+              <td>{object.artistDisplayName || 'Unknown'}</td>
+              <td>{object.objectDate || 'Unknown'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <button onClick={handlePrevPage} disabled={page === 1}>Previous</button>
       <button onClick={handleNextPage} disabled={page === totalPages}>Next</button>
       <p>
