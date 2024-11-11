@@ -1,15 +1,19 @@
 .department-grid {
   display: grid;
-  background-color: #373737;
+  background-color: #6c6c6c;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  row-gap: 5px;
+  column-gap: 5px;
+  padding: 35px;
 }
 
 .department-button {
-  background-color: #373737;
+  /* background-color: #373737; */
   padding: 10px;
   color: rgb(255, 255, 255);
   font-size: 1em;
   text-align: center;
+  min-height: 100px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }

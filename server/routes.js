@@ -57,8 +57,8 @@ objectsRouter.get('/', async (req, res) => {
 
 // Search objects by department and query
 objectsRouter.get('/search', async (req, res) => {
-  const { depId, q = 'painting' } = req.query
-  const cacheKey = `search-${depId}-${q}`
+  const { depId, q = {} } = req.query
+  const cacheKey = `search-${depId}-${q.field}`
   const cachedData = cache.get(cacheKey)
 
   if (cachedData) {
@@ -66,7 +66,7 @@ objectsRouter.get('/search', async (req, res) => {
   }
 
   try {
-    const response = await request.get(`https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=${q}&departmentId=${depId}`)
+    const response = await request.get(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=${q.search}&${q.field}=true&departmentId=${depId}`)
     cache.set(cacheKey, response.body)
     res.json(response.body)
   } catch (err) {

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
-import { getObjects, getObjectDetails } from '../api'
+import { getObjects, getObjectDetails, getObjectsByDepartment } from '../api'
+import CollectionSearch from './QueryTool'
+import './DepartmentObjects.css'
 
 function DepartmentObjects () {
   const { departmentId } = useParams()
@@ -12,7 +14,6 @@ function DepartmentObjects () {
   const [totalItems, setTotalItems] = useState(0)
   const [objectIds, setObjectIds] = useState([])
   const [objects, setObjects] = useState([])
-  console.log("🚀 ~ DepartmentObjects ~ objects:", objects)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -24,7 +25,6 @@ function DepartmentObjects () {
     setLoading(true)
     getObjects(departmentId, page, pageSize)
       .then(data => {
-        console.log(data)
         setObjectIds(data.items)
         setTotalPages(data.totalPages)
         setTotalItems(data.totalItems)
@@ -32,6 +32,44 @@ function DepartmentObjects () {
       })
       .catch(() => setLoading(false))
   }, [departmentId, page, pageSize])
+
+  useEffect(() => {
+    if (!objectIds || objectIds.length === 0) {
+      setObjects([])
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    const objectDataPromises = objectIds.map(id => getObjectDetails(id))
+
+    Promise.all(objectDataPromises)
+      .then(objectData => {
+        console.log('objectData', objectData)
+        setObjects(objectData)
+        setLoading(false)
+      })
+      .catch(err => {
+        setError('Failed to load object details')
+        setLoading(false)
+      })
+  }, [objectIds])
+
+  const fetchSearchData = (query) => {
+    setLoading(true)
+    getObjectsByDepartment(departmentId, query)
+      .then(data => {
+        console.log('data:  ', data)
+        setObjectIds(data.objectIDs)
+        // setTotalPages(data.totalPages)
+        setTotalItems(data.total)
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+        setError('Error fetching search results')
+      })
+  }
 
   const handleNextPage = () => {
     if (page < totalPages) setPage(prevPage => prevPage + 1)
@@ -67,11 +105,15 @@ function DepartmentObjects () {
 
   return (
     <div className='main-content'>
+      <CollectionSearch
+        departmentName={departmentName}
+        onSearch={fetchSearchData}
+      />
       {objects.length === 0
         ? <p>No objects found for department {departmentName}</p>
         : null
       }
-      <div>Total items found in {departmentName}: {totalItems}</div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}><p>Total items: {totalItems}</p></div>
       <table>
         <thead>
           <tr>
@@ -98,10 +140,12 @@ function DepartmentObjects () {
           ))}
         </tbody>
       </table>
-      <button onClick={handlePrevPage} disabled={page === 1}>Previous</button>
-      <button onClick={handleNextPage} disabled={page === totalPages}>Next</button>
+      <div className='pagination-buttons'>
+        <button onClick={handlePrevPage} disabled={page === 1}>Previous</button>
+        <button onClick={handleNextPage} disabled={page === totalPages}>Next</button>
+      </div>
       <p>
-            Page {page} of {totalPages}
+        Page {page} of {totalPages}
       </p>
     </div>
   )
