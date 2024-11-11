@@ -66,7 +66,7 @@ function DepartmentObjects () {
   if (error) return <p>{error}</p>
 
   return (
-    <div>
+    <div className='main-content'>
       {objects.length === 0
         ? <p>No objects found for department {departmentName}</p>
         : null

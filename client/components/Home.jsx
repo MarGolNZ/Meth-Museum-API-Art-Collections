@@ -9,7 +9,7 @@ function Home () {
     setSelectedDepartment(departmentId)
   }
   return (
-    <div className="main-content">
+    <div>
       <Header />
       <div className="content">
         <DepartmentData onDepartmentSelect={handleDepartmentSelect} />
