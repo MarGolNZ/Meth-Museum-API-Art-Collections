@@ -4,7 +4,7 @@ import DepartmentObjects from './DepartmentObjects'
 import { getDepartments } from '../api'
 import './DepartmentData.css'
 
-function DepartmentData () {
+function DepartmentData ({onDepartmentSelect}) {
   const [activeDepartment, setActiveDepartment] = useState(null)
   const [departments, setDepartments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -24,7 +24,8 @@ function DepartmentData () {
   }, [])
 
   const handleButtonClick = (departmentId) => {
-    setActiveDepartment(departmentId) // Set the active department when clicked
+    setActiveDepartment(departmentId)
+    onDepartmentSelect(departmentId)
   }
 
   if (loading) return <p>Loading departments...</p>
@@ -32,8 +33,7 @@ function DepartmentData () {
 
   return (
     <div>
-      <div className="side-nav">
-        <h2>Departments</h2>
+      <div className="department-grid">
         {departments.map(dept => (
           <button
             key={dept.departmentId}
@@ -43,7 +43,7 @@ function DepartmentData () {
             <Link
               className="department-link"
               to={{
-                pathname: `${url}/${dept.departmentId}`,
+                pathname: `${url}department/${dept.departmentId}`,
                 state: { departmentName: dept.displayName }
               }}
             >
@@ -53,7 +53,7 @@ function DepartmentData () {
         ))}
       </div>
 
-      <Route path={`${path}/:departmentId`} component={DepartmentObjects} />
+      <Route path={`${path}department/:departmentId`} component={DepartmentObjects} />
     </div>
   )
 }

@@ -9,8 +9,10 @@ function DepartmentObjects () {
   const [page, setPage] = useState(1)
   const [pageSize] = useState(10)
   const [totalPages, setTotalPages] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
   const [objectIds, setObjectIds] = useState([])
   const [objects, setObjects] = useState([])
+  console.log("🚀 ~ DepartmentObjects ~ objects:", objects)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -22,8 +24,10 @@ function DepartmentObjects () {
     setLoading(true)
     getObjects(departmentId, page, pageSize)
       .then(data => {
+        console.log(data)
         setObjectIds(data.items)
         setTotalPages(data.totalPages)
+        setTotalItems(data.totalItems)
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -65,8 +69,9 @@ function DepartmentObjects () {
     <div>
       {objects.length === 0
         ? <p>No objects found for department {departmentName}</p>
-        : <h2>Objects in {departmentName}</h2>
+        : null
       }
+      <div>Total items found in {departmentName}: {totalItems}</div>
       <table>
         <thead>
           <tr>

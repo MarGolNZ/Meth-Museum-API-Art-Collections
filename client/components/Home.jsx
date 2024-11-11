@@ -1,24 +1,24 @@
-import React from 'react'
-import { Link, Route, Switch, useRouteMatch } from 'react-router-dom'
+import React, { useState } from 'react'
+import Header from './Header'
 import DepartmentData from './DepartmentData'
 
-function Home() {
-  const { path, url } = useRouteMatch()
+function Home () {
+  const [selectedDepartment, setSelectedDepartment] = useState(null)
 
+  const handleDepartmentSelect = (departmentId) => {
+    setSelectedDepartment(departmentId)
+  }
   return (
     <div className="main-content">
-      <h1>Welcome to the Met Museum Explorer</h1>
-      <nav>
-        <button>
-          <Link to={`${url}departments`}>Departments</Link>
-        </button>
-      </nav>
-
+      <Header />
       <div className="content">
-        <Switch>
-          <Route exact path={path} render={() => <p>Select an option above to view data.</p>} />
-          <Route path={`${path}departments`} component={DepartmentData} />
-        </Switch>
+        <DepartmentData onDepartmentSelect={handleDepartmentSelect} />
+        {selectedDepartment === null && (
+          <div className="welcome-placeholder">
+            <h2>Welcome to the Met Museum Art Explorer!</h2>
+            <p>Select a department to explore the Met Museum Art collections or search the collection.</p>
+          </div>
+        )}
       </div>
     </div>
   )

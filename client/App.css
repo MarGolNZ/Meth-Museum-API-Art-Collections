@@ -1,4 +1,6 @@
-body {
+body, html {
+  margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
 }
 
@@ -20,7 +22,23 @@ th {
 }
 
 .main-content {
-  margin-left: 260px;
-  padding: 20px;
+  /* margin-left: 260px; */
+  /* padding: 20px; */
 }
 
+.welcome-placeholder {
+  text-align: center;
+  margin-top: 50px;
+  color: #333;
+}
+
+.welcome-placeholder h2 {
+  font-size: 24px;
+  color: #373737;
+}
+
+.welcome-placeholder p {
+  font-size: 16px;
+  color: #666;
+  margin-top: 10px;
+}
